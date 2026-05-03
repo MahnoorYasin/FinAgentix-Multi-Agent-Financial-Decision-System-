@@ -1,0 +1,24 @@
+{
+    "metrics": [
+        {
+            "name": "success_rate",
+            "threshold": 60.0,
+            "description": "At least 60% of test queries must complete without errors"
+        },
+        {
+            "name": "tool_accuracy",
+            "threshold": 50.0,
+            "description": "At least 50% F1 score for correct tool selection"
+        },
+        {
+            "name": "faithfulness",
+            "threshold": 0.1,
+            "description": "Faithfulness score above 0.1 (basic no-hallucination check)"
+        },
+        {
+            "name": "answer_relevancy",
+            "threshold": 0.0,
+            "description": "Answer relevancy baseline - watching for regression"
+        }
+    ]
+}

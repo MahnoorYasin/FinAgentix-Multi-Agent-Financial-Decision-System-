@@ -1,0 +1,104 @@
+﻿====================================================================
+LAB 9: INDUSTRIAL PACKAGING & DEPLOYMENT - FINAL REPORT
+FinAgentix - AI Financial Agent
+Date: 2026-05-03 23:13:47
+====================================================================
+
+1. REPRODUCIBLE CONTAINER IMAGE
+====================================================================
+
+Base Image: python:3.11-slim
+Justification:
+  - 150MB vs 900MB for full python:3.11 (smaller footprint)
+  - Python 3.11 is 10-60% faster than 3.10
+  - All project dependencies (LangChain, FastAPI, yfinance) compatible
+  - Slim variant = fewer CVEs = smaller attack surface
+
+Layer Order (Optimized for Build Caching):
+  FROM python:3.11-slim        # Base (cached permanently)
+  RUN apt-get install          # System deps (cached unless changed)
+  COPY requirements.txt .      # Deps file (cache invalidated if deps change)
+  RUN pip install -r ...       # Packages (cached unless requirements change)
+  COPY . .                     # App code (rebuilds on any code edit)
+
+  Why this order: pip install (8-10 min) only re-runs when requirements.txt
+  changes. Code edits rebuild only the final layer (<1 second).
+  
+  Justification: Requirements copied BEFORE application code.
+  This exploits Docker build cache: pip install only re-runs when
+  requirements.txt changes, saving 8-10 minutes per rebuild.
+  Code changes only trigger Layer 6 rebuild (<1 second).
+
+Multi-Stage Build: Not used. Build dependencies (gcc) needed at runtime.
+
+
+====================================================================
+2. SECRET-FREE IMAGE
+====================================================================
+
+No secrets in image:
+  - .dockerignore excludes .env, .env.*, *.key, *.pem
+  - Dockerfile has NO ENV or COPY for secret files
+
+Runtime injection method:
+  Host:  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="gsk_..."
+  docker-compose.yaml: GROQ_API_KEY=
+  Result: Key passed at container startup, never baked into image
+
+Excluded from image (.dockerignore):
+  venv/  __pycache__/  *.pyc  .git/  logs/  knowledge_base/  *.db
+  Result: Image size reduced from ~3GB to ~500MB
+
+
+====================================================================
+3. MULTI-SERVICE ORCHESTRATION
+====================================================================
+
+Services (docker-compose.yaml):
+  finagentix-api (port 8000) - FastAPI + LangGraph agent
+  finagentix-chromadb (port 8001) - Vector database
+
+Lifecycle:
+  Start: docker compose up -d (both services + network + volumes)
+  Discovery: Same Docker network, agent reaches chromadb by hostname
+  Stop: docker compose down (both stop, volumes preserved)
+
+Persistent Data (Named Volumes):
+  chroma_data - Vector embeddings survive container restart
+  agent_data - Checkpoint state survives container restart
+
+Proof: Test 2 (thread_id="t1") and Test 6 (same thread_id) both work.
+After docker compose down/up, thread_id="t1" still retrieves state.
+
+
+====================================================================
+4. END-TO-END TEST RESULTS
+====================================================================
+
+Startup: docker compose up -d (single command, zero manual setup)
+
+10/10 Tests Passed:
+  1.  GET /health              PASS - healthy, graph_loaded=True
+  2.  POST /chat (Apple)       PASS - .06 (-0.87%)
+  3.  POST /chat (Microsoft)   PASS - .62 (+2.13%)
+  4.  POST /chat (Nvidia)      PASS - .27 (+4.32%)
+  5.  POST /chat (Tesla)       PASS - .82 (+2.41%)
+  6.  POST /chat (Persistence) PASS - Same thread works
+  7.  POST /stream (Meta)      PASS - SSE: start, processing, complete
+  8.  POST /chat (Technical)   PASS - RSI=62.01, SMA20=, SMA50=
+  9.  POST /chat (Empty msg)   PASS - HTTP 422 validation error
+  10. GET /                    PASS - service=FinAgentix API
+
+
+====================================================================
+SUBMISSION CHECKLIST
+====================================================================
+
+[x] Dockerfile           - Layer-optimized, python:3.11-slim base
+[x] docker-compose.yaml  - Agent API + ChromaDB + volumes + secrets
+[x] .dockerignore        - Excludes venv, .env, caches, secrets
+[x] docker_build.log     - 10/10 tests passed with evidence
+
+====================================================================
+CONCLUSION: All 4 mandatory outcomes satisfied.
+====================================================================

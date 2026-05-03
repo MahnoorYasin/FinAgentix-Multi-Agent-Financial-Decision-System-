@@ -1,0 +1,90 @@
+{
+  "timestamp": "2026-05-04T00:40:08.427748",
+  "passed": true,
+  "scores": {
+    "success_rate": 100.0,
+    "tool_accuracy": 100.0,
+    "faithfulness": 0.5,
+    "answer_relevancy": 0.4
+  },
+  "thresholds": {
+    "success_rate": 60.0,
+    "tool_accuracy": 50.0,
+    "faithfulness": 0.1,
+    "answer_relevancy": 0.0
+  },
+  "threshold_results": [
+    {
+      "metric": "success_rate",
+      "score": 100.0,
+      "threshold": 60.0,
+      "passed": true
+    },
+    {
+      "metric": "tool_accuracy",
+      "score": 100.0,
+      "threshold": 50.0,
+      "passed": true
+    },
+    {
+      "metric": "faithfulness",
+      "score": 0.5,
+      "threshold": 0.1,
+      "passed": true
+    },
+    {
+      "metric": "answer_relevancy",
+      "score": 0.4,
+      "threshold": 0.0,
+      "passed": true
+    }
+  ],
+  "test_results": [
+    {
+      "id": "CI001",
+      "query": "What is Apple stock price?",
+      "success": true,
+      "tools_called": [
+        "get_realtime_quotes"
+      ],
+      "tool_accuracy": 100.0
+    },
+    {
+      "id": "CI002",
+      "query": "Show me Microsoft stock",
+      "success": true,
+      "tools_called": [
+        "get_realtime_quotes"
+      ],
+      "tool_accuracy": 100.0
+    },
+    {
+      "id": "CI003",
+      "query": "What is Nvidia stock price?",
+      "success": true,
+      "tools_called": [
+        "get_realtime_quotes"
+      ],
+      "tool_accuracy": 100.0
+    },
+    {
+      "id": "CI004",
+      "query": "Show me Tesla stock",
+      "success": true,
+      "tools_called": [
+        "get_realtime_quotes"
+      ],
+      "tool_accuracy": 100.0
+    },
+    {
+      "id": "CI005",
+      "query": "Show moving averages for Apple",
+      "success": true,
+      "tools_called": [
+        "compute_technical_indicators"
+      ],
+      "tool_accuracy": 100.0
+    }
+  ],
+  "summary": "5/5 tests successful"
+}

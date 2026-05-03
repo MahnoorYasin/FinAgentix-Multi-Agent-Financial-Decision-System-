@@ -1,0 +1,24 @@
+====================================================================
+LAB 7: EVALUATION & OBSERVABILITY - LANGCHAIN TRACE ANALYSIS
+====================================================================
+
+Project Name: FinAgentix
+LangSmith Project URL: https://smith.langchain.com/projects/p/FinAgentix
+Trace Run ID: 455af359-3a6d-4a40-ae31-751052c0574d
+
+====================================================================
+ACCESS INSTRUCTIONS FOR EVALUATOR
+====================================================================
+
+LangSmith projects are private by default and require authentication.
+To view this trace:
+
+1. Go to: https://smith.langchain.com
+2. Log in with your LangChain account
+3. Navigate to: Projects → FinAgentix
+4. Search for Run ID: 455af359-3a6d-4a40-ae31-751052c0574d
+5. Click on the run to expand and view full trace details
+
+Alternatively, a PDF export of this trace is included with the submission:
+→ langsmith_trace_455af359.pdf
+

@@ -1,0 +1,123 @@
+FinAgentix Lab 8 - API Test Results
+Date: April 26, 2026
+Server: http://localhost:8000
+Model: llama-3.3-70b-versatile
+
+============================================================
+TEST 1: Health Check (GET /health)
+============================================================
+Command: Invoke-RestMethod -Uri http://localhost:8000/health
+Response: {"status":"healthy","agent":"FinAgentix","graph_loaded":true,"model":"llama-3.3-70b-versatile"}
+Status: PASS
+
+============================================================
+TEST 2: Stock Price Query (POST /chat)
+============================================================
+Command: POST /chat
+Request: {"message":"What is Apple stock price?","thread_id":"test_001"}
+Response:
+  - Status: success
+  - Thread: test_001
+  - Tools Used: get_realtime_quotes
+  - Apple Price: $271.06 (-0.87%)
+  - Volume: 38,033,227
+Status: PASS
+
+============================================================
+TEST 3: Different Stock Query (POST /chat)
+============================================================
+Command: POST /chat
+Request: {"message":"Show me Microsoft stock","thread_id":"test_002"}
+Response:
+  - Status: success
+  - Thread: test_002
+  - Tools Used: get_realtime_quotes
+  - Microsoft Price: $424.62 (+2.13%)
+  - Volume: 27,161,742
+Status: PASS
+
+============================================================
+TEST 4: Persistence Test - Same Thread (POST /chat)
+============================================================
+Command: POST /chat
+Request: {"message":"What about Nvidia?","thread_id":"test_001"}
+Response:
+  - Status: success
+  - Thread: test_001 (same as Test 2 - persistence working)
+  - Tools Used: get_realtime_quotes
+  - Nvidia Price: $208.27 (+4.32%)
+  - Volume: 213,442,479
+Status: PASS
+
+============================================================
+TEST 5: Streaming Endpoint (POST /stream)
+============================================================
+Command: POST /stream
+Request: {"message":"Show me Tesla stock","thread_id":"test_003"}
+Response:
+  - Event: start - Agent execution started, ticker=TSLA
+  - Event: processing - Agent is processing your request
+  - Event: complete - Final response received
+  - Tesla Price: $376.30 (+0.69%)
+  - Volume: 62,357,183
+  - Tools Used: get_realtime_quotes
+Status: PASS (All 3 SSE events received: start, processing, complete)
+
+============================================================
+TEST 6: Technical Indicators Query (POST /chat)
+============================================================
+Command: POST /chat
+Request: {"message":"What are the moving averages for Apple?","thread_id":"test_004"}
+Response:
+  - Status: success
+  - Thread: test_004
+  - Tools Used: compute_technical_indicators
+  - RSI: 62.01
+  - SMA20: $261.40
+  - SMA50: $260.15
+Status: PASS
+
+============================================================
+TEST 7: Validation Test - Empty Message (POST /chat)
+============================================================
+Command: POST /chat
+Request: {"message":"","thread_id":"test_005"}
+Response: HTTP 422 - Validation Error: "String should have at least 1 character"
+Status: PASS (Pydantic schema validation working correctly)
+
+============================================================
+SUMMARY
+============================================================
+Total Tests: 7
+Passed: 7
+Failed: 0
+
+Endpoints Working:
+  - GET /health        : PASS
+  - POST /chat         : PASS (4 queries, all successful)
+  - POST /stream       : PASS (SSE stream with start/processing/complete events)
+  - Schema Validation  : PASS (empty message rejected with 422)
+
+Real-Time Stock Data Retrieved:
+  - AAPL: $271.06 (-0.87%), Volume: 38,033,227
+  - MSFT: $424.62 (+2.13%), Volume: 27,161,742
+  - NVDA: $208.27 (+4.32%), Volume: 213,442,479
+  - TSLA: $376.30 (+0.69%), Volume: 62,357,183
+
+Technical Indicators (AAPL):
+  - RSI: 62.01
+  - SMA20: $261.40
+  - SMA50: $260.15
+
+Features Demonstrated:
+  - RESTful architecture with FastAPI
+  - Pydantic schema validation (ChatRequest/ChatResponse)
+  - LangGraph state management with thread_id persistence
+  - Streaming via Server-Sent Events (SSE)
+  - Real-time stock data via Yahoo Finance
+  - Technical indicator computation
+  - Proper error handling with HTTP status codes
+  - LangSmith tracing enabled
+  - FastAPI lifespan for resource management
+
+============================================================

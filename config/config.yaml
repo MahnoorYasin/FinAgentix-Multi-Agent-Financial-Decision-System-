@@ -1,0 +1,66 @@
+# Configuration parameters for FinAgentix
+
+paths:
+  raw_data: "./data/raw"
+  knowledge_base: "./knowledge_base/chroma_data"
+
+embedding:
+  model_name: "all-MiniLM-L6-v2"  # Free, runs locally
+  dimension: 384
+  batch_size: 32
+
+chunking:
+  market:
+    strategy: "by_month"
+    chunk_size: 30  # days
+  news:
+    strategy: "by_article"
+    max_chunk_size: 1000  # characters
+  compliance:
+    strategy: "by_rule"
+    max_chunk_size: 2000  # characters
+  fundamental:
+    strategy: "by_company"
+  economic:
+    strategy: "by_indicator"
+  risk:
+    strategy: "by_stock"
+
+chromadb:
+  collection_names:
+    market: "market_data"
+    news: "news_articles"
+    compliance: "finra_rules"
+    fundamental: "company_fundamentals"
+    economic: "economic_indicators"
+    risk: "risk_metrics"
+
+agents:
+  llm:
+    use_local: true  
+    local_model: "llama3"
+    openai_model: "gpt-3.5-turbo"
+  
+  market:
+    enabled: true
+    tools: ["get_realtime_quotes", "get_historical_data", "search_sec_filings"]
+  
+  news:
+    enabled: true
+    tools: ["fetch_financial_news", "analyze_news_sentiment"]
+  
+  risk:
+    enabled: true
+    tools: ["calculate_value_at_risk", "compute_portfolio_volatility", "stress_test_portfolio"]
+  
+  compliance:
+    enabled: true
+    tools: ["check_finra_compliance", "generate_audit_trail"]
+  
+  economic:
+    enabled: true
+    tools: ["get_economic_indicator"]
+  
+  portfolio:
+    enabled: true
+    tools: ["optimize_portfolio_mpt", "calculate_sharpe_ratio", "generate_investment_thesis"]

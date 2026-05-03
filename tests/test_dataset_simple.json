@@ -1,0 +1,59 @@
+{
+    "test_cases": [
+        {
+            "id": "TC001",
+            "category": "market_price",
+            "query": "What is the current stock price of Apple?",
+            "expected_answer": "AAPL current trading price with daily volume and change data.",
+            "expected_tools": [
+                "get_realtime_quotes"
+            ],
+            "difficulty": "easy",
+            "requires_rag": false
+        },
+        {
+            "id": "TC002",
+            "category": "market_price",
+            "query": "How much is Microsoft stock right now?",
+            "expected_answer": "MSFT current trading price with market data.",
+            "expected_tools": [
+                "get_realtime_quotes"
+            ],
+            "difficulty": "easy",
+            "requires_rag": false
+        },
+        {
+            "id": "TC003",
+            "category": "market_price",
+            "query": "What is the current stock price of Nvidia?",
+            "expected_answer": "NVDA current trading price and daily change.",
+            "expected_tools": [
+                "get_realtime_quotes"
+            ],
+            "difficulty": "easy",
+            "requires_rag": false
+        },
+        {
+            "id": "TC004",
+            "category": "market_price",
+            "query": "Show me the stock price for Tesla",
+            "expected_answer": "TSLA current trading price with volume data.",
+            "expected_tools": [
+                "get_realtime_quotes"
+            ],
+            "difficulty": "easy",
+            "requires_rag": false
+        },
+        {
+            "id": "TC005",
+            "category": "technical",
+            "query": "What are the moving averages for Apple?",
+            "expected_answer": "AAPL SMA20 and SMA50 technical indicator values.",
+            "expected_tools": [
+                "compute_technical_indicators"
+            ],
+            "difficulty": "easy",
+            "requires_rag": false
+        }
+    ]
+}

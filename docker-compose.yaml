@@ -1,0 +1,74 @@
+# ============================================
+# FinAgentix Docker Compose - Lab 9
+# Services: Agent API + ChromaDB Vector Store
+# ============================================
+
+version: '3.8'
+
+services:
+  # ==========================================
+  # Service 1: FinAgentix API
+  # ==========================================
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finagentix-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Secrets injected at RUNTIME (not baked into image)
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY:-}
+      - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2:-false}
+      - LANGCHAIN_PROJECT=FinAgentix
+      # ChromaDB connection
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      # Disable ONNX telemetry
+      - ANONYMIZED_TELEMETRY=False
+      - CHROMA_TELEMETRY=False
+    depends_on:
+      chromadb:
+        condition: service_started
+    volumes:
+      # Persist checkpoint database
+      - agent_data:/app/data
+    networks:
+      - finagentix-network
+    restart: unless-stopped
+
+  # ==========================================
+  # Service 2: ChromaDB Vector Store
+  # ==========================================
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: finagentix-chromadb
+    ports:
+      - "8001:8000"
+    volumes:
+      # Persist vector database data
+      - chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=False
+    networks:
+      - finagentix-network
+    restart: unless-stopped
+
+# ==========================================
+# Volumes (data survives container restarts)
+# ==========================================
+volumes:
+  agent_data:
+    name: finagentix_agent_data
+  chroma_data:
+    name: finagentix_chroma_data
+
+# ==========================================
+# Network (containers discover each other)
+# ==========================================
+networks:
+  finagentix-network:
+    name: finagentix_network
+    driver: bridge

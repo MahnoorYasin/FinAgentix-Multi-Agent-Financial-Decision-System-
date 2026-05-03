@@ -1,0 +1,49 @@
+BOTTLENECK ANALYSIS - FinAgentix Lab 7
+Date: April 13, 2026
+
+PRIMARY BOTTLENECK IDENTIFIED:
+LLM API calls represent the critical bottleneck in the FinAgentix system.
+During evaluation, the Groq API rate limit (100,000 tokens/day) was 
+exceeded after processing approximately 24 test cases, causing cascading 
+failures in response generation.
+
+EVIDENCE FROM EVALUATION RUN:
+- API Rate Limit Error: "Limit 100000, Used 99812, Requested 2122"
+- Recovery Time Indicated: "Please try again in 27m50.976s"
+- Each agent call attempts 2-3 retries before failing
+- Average token usage per complex query: ~2,500-3,000 tokens
+
+SECONDARY BOTTLENECK:
+The multi-agent architecture triggers multiple LLM calls per query:
+1. Router LLM call (classification)
+2. Specialist Agent LLM call (analysis)
+3. Report Generator LLM call (formatting)
+4. RAGAS Judge LLM calls (evaluation)
+
+This multiplies token usage by 4-6x per test case.
+
+PROPOSED FIXES:
+
+1. IMMEDIATE (Free Tier):
+   - Implement response caching with TTL of 1 hour
+   - Batch similar queries to reduce duplicate API calls
+   - Use smaller model (llama-3.2-3b) for routing/classification
+
+2. SHORT-TERM (Low Cost):
+   - Upgrade to Groq Dev Tier ($5/month, higher limits)
+   - Implement request queuing with exponential backoff
+   - Add local fallback responses for common queries
+
+3. LONG-TERM (Production):
+   - Deploy local LLM (Ollama) for high-frequency queries
+   - Implement semantic cache using vector embeddings
+   - Use streaming responses to reduce perceived latency
+
+EXPECTED IMPROVEMENT:
+- Token Usage Reduction: 60-70% with caching
+- Success Rate: 0% → 95%+ for full test suite
+- Cost per 1000 queries: $0.50 (optimized) vs $2.50 (current)
+
+LESSON LEARNED:
+API rate limits are a critical production consideration that must be
+accounted for in the architecture design phase, not as an afterthought.
