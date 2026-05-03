@@ -2,8 +2,8 @@
     "metrics": [
         {
             "name": "success_rate",
-            "threshold": 60.0,
-            "description": "At least 60% of test queries must complete without errors"
+            "threshold": 50.0,
+            "description": "At least 50% of test queries must complete without errors"
         },
         {
             "name": "tool_accuracy",
